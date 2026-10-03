@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Kalkulator Matriks</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    min-height: 100vh;
+    padding: 20px;
+}
+
+.container {
+    max-width: 1000px;
+    margin: auto;
+    background: white;
+    padding: 25px;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+}
+
+h1 {
+    text-align: center;
+    color: #333;
+}
+
+h2 {
+    color: #444;
+}
+
+.controls {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+select {
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 8px;
+}
+
+.matrices {
+    display: flex;
+    justify-content: center;
+    gap: 50px;
+    flex-wrap: wrap;
+}
+
+.matrix-box {
+    text-align: center;
+}
+
+.matrix {
+    display: inline-grid;
+    gap: 5px;
+    margin: 10px;
+}
+
+.matrix input {
+    width: 60px;
+    height: 45px;
+    text-align: center;
+    font-size: 17px;
+    border: 2px solid #ccc;
+    border-radius: 6px;
+}
+
+.buttons {
+    text-align: center;
+    margin-top: 20px;
+}
+
+button {
+    border: none;
+    padding: 12px 16px;
+    margin: 5px;
+    border-radius: 8px;
+    background: #667eea;
+    color: white;
+    font-size: 15px;
+    cursor: pointer;
+}
+
+button:hover {
+    opacity: 0.85;
+}
+
+.reset {
+    background: #e74c3c;
+}
+
+#hasil {
+    margin-top: 30px;
+    padding: 20px;
+    background: #f5f5f5;
+    border-radius: 12px;
+    overflow-x: auto;
+}
+
+.hasil-matrix {
+    border-collapse: collapse;
+    margin: 15px auto;
+}
+
+.hasil-matrix td {
+    border: 1px solid #999;
+    padding: 10px 15px;
+    text-align: center;
+    min-width: 60px;
+}
+
+.info {
+    text-align: center;
+    color: #666;
+    margin-top: 20px;
+}
+
+@media(max-width:600px) {
+    .container {
+        padding: 15px;
+    }
+
+    .matrices {
+        gap: 10px;
+    }
+
+    .matrix input {
+        width: 50px;
+        height: 40px;
+    }
+
+    button {
+        width: 90%;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>🧮 Kalkulator Matriks</h1>
+
+<div class="controls">
+
+    <label>Ukuran Matriks:</label>
+
+    <select id="ukuran" onchange="buatMatriks()">
+        <option value="2">2 × 2</option>
+        <option value="3" selected>3 × 3</option>
+        <option value="4">4 × 4</option>
+    </select>
+
+</div>
+
+<div class="matrices">
+
+    <div class="matrix-box">
+
+        <h2>Matriks A</h2>
+
+        <div id="matriksA" class="matrix"></div>
+
+    </div>
+
+    <div class="matrix-box">
+
+        <h2>Matriks B</h2>
+
+        <div id="matriksB" class="matrix"></div>
+
+    </div>
+
+</div>
+
+<div class="buttons">
+
+    <button onclick="penjumlahan()">A + B</button>
+
+    <button onclick="pengurangan()">A − B</button>
+
+    <button onclick="perkalian()">A × B</button>
+
+    <button onclick="transposeA()">Transpose A</button>
+
+    <button onclick="transposeB()">Transpose B</button>
+
+    <button onclick="determinanA()">Determinan A</button>
+
+    <button onclick="determinanB()">Determinan B</button>
+
+    <button onclick="inversA()">Invers A</button>
+
+    <button onclick="inversB()">Invers B</button>
+
+    <button onclick="gaussJordan()">Gauss-Jordan A</button>
+
+    <button class="reset" onclick="resetMatriks()">Reset</button>
+
+</div>
+
+<div id="hasil">
+
+    <h2>Hasil</h2>
+
+    <p>Masukkan nilai matriks kemudian pilih operasi.</p>
+
+</div>
+
+<div class="info">
+    Kalkulator Matriks | Penjumlahan | Pengurangan | Perkalian |
+    Transpose | Determinan | Invers | Gauss-Jordan
+</div>
+
+</div>
+
+<script>
+
+/* =========================
+   MEMBUAT MATRIKS
+========================= */
+
+function buatMatriks() {
+
+    let n = parseInt(document.getElementById("ukuran").value);
+
+    let A = document.getElementById("matriksA");
+    let B = document.getElementById("matriksB");
+
+    A.innerHTML = "";
+    B.innerHTML = "";
+
+    A.style.gridTemplateColumns = `repeat(${n}, 60px)`;
+    B.style.gridTemplateColumns = `repeat(${n}, 60px)`;
+
+    for(let i = 0; i < n; i++) {
+
+        for(let j = 0; j < n; j++) {
+
+            let inputA = document.createElement("input");
+
+            inputA.type = "number";
+            inputA.step = "any";
+            inputA.id = `A${i}${j}`;
+            inputA.value = i === j ? "1" : "0";
+
+            A.appendChild(inputA);
+
+
+            let inputB = document.createElement("input");
+
+            inputB.type = "number";
+            inputB.step = "any";
+            inputB.id = `B${i}${j}`;
+            inputB.value = i === j ? "1" : "0";
+
+            B.appendChild(inputB);
+        }
+    }
+}
+
+
+/* =========================
+   MENGAMBIL MATRIKS
+========================= */
+
+function ambilMatriks(huruf) {
+
+    let n = parseInt(document.getElementById("ukuran").value);
+
+    let M = [];
+
+    for(let i = 0; i < n; i++) {
+
+        M[i] = [];
+
+        for(let j = 0; j < n; j++) {
+
+            let id = `${huruf}${i}${j}`;
+
+            let nilai = parseFloat(
+                document.getElementById(id).value
+            );
+
+            if(isNaN(nilai)) nilai = 0;
+
+            M[i][j] = nilai;
+        }
+    }
+
+    return M;
+}
+
+
+/* =========================
+   MENAMPILKAN MATRIKS
+========================= */
+
+function tampilkan(M, judul) {
+
+    let html = `<h2>${judul}</h2>`;
+
+    html += `<table class="hasil-matrix">`;
+
+    for(let i = 0; i < M.length; i++) {
+
+        html += "<tr>";
+
+        for(let j = 0; j < M[i].length; j++) {
+
+            html += `<td>${formatAngka(M[i][j])}</td>`;
+        }
+
+        html += "</tr>";
+    }
+
+    html += "</table>";
+
+    document.getElementById("hasil").innerHTML = html;
+}
+
+
+/* =========================
+   FORMAT ANGKA
+========================= */
+
+function formatAngka(x) {
+
+    if(Math.abs(x) < 0.00000001)
+        x = 0;
+
+    return Number
